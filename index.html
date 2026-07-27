@@ -36,6 +36,10 @@
             color: lightblue;
         }
 
+        .dark-mode-control {
+            margin-bottom: 20px;
+        }
+
         #universityResources,
         #personalProjects {
             border: 2px solid black;
@@ -46,10 +50,6 @@
         .dark-mode #universityResources,
         .dark-mode #personalProjects {
             border-color: white;
-        }
-
-        .dark-mode-control {
-            margin-bottom: 20px;
         }
 
         .page-notification {
@@ -70,10 +70,83 @@
             font-weight: bold;
             margin-top: 15px;
         }
+
+        /* Modal background overlay */
+        #welcomeModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.55);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        /* Modal message box */
+        .modal-content {
+            background-color: white;
+            color: black;
+            padding: 25px;
+            width: 320px;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        .modal-content button {
+            padding: 8px 18px;
+            cursor: pointer;
+        }
+
+        /* Tooltip container */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Hidden tooltip message */
+        .tooltip-text {
+            visibility: hidden;
+            width: 180px;
+            background-color: black;
+            color: white;
+            text-align: center;
+            padding: 6px;
+            border-radius: 5px;
+
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+
+        /* Display tooltip when hovering */
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+        }
     </style>
 </head>
 
 <body>
+
+    <!-- Welcome Modal -->
+    <div id="welcomeModal">
+        <div class="modal-content">
+            <h2>Welcome to My Portfolio</h2>
+
+            <p>
+                This page is a work in progress as I continue
+                building my software development skills.
+            </p>
+
+            <button type="button" id="closeModal">
+                Close
+            </button>
+        </div>
+    </div>
 
     <!-- Dark Mode Toggle -->
     <div class="dark-mode-control">
@@ -109,7 +182,6 @@
 
             <h3>My Skills and Technologies</h3>
 
-            <!-- JavaScript adds the skills here -->
             <ul id="skillsList"></ul>
         </section>
 
@@ -176,7 +248,6 @@
                 </li>
             </ul>
 
-            <!-- JavaScript adds a new project here -->
             <div id="dynamicProjectArea"></div>
         </section>
 
@@ -187,6 +258,7 @@
             <form id="contactForm">
 
                 <label for="name">Sender Name:</label>
+
                 <input
                     type="text"
                     id="name"
@@ -197,6 +269,7 @@
                 <br><br>
 
                 <label for="email">Email Address:</label>
+
                 <input
                     type="email"
                     id="email"
@@ -207,6 +280,7 @@
                 <br><br>
 
                 <label for="subject">Subject:</label>
+
                 <input
                     type="text"
                     id="subject"
@@ -216,6 +290,7 @@
                 <br><br>
 
                 <label for="message">Message:</label>
+
                 <textarea
                     id="message"
                     name="message"
@@ -224,9 +299,18 @@
 
                 <br><br>
 
-                <button type="submit" id="submitButton">
-                    Send Message
-                </button>
+                <!-- Submit Button Tooltip -->
+                <div class="tooltip">
+
+                    <button type="submit" id="submitButton">
+                        Send Message
+                    </button>
+
+                    <span class="tooltip-text">
+                        Click to send your message!
+                    </span>
+
+                </div>
 
                 <p id="formStatus"></p>
 
@@ -238,14 +322,16 @@
     <script>
         "use strict";
 
-        // Ask the visitor for their name
-        const visitorName = prompt("What is your name?");
+        // Close the welcome modal
+        const welcomeModal =
+            document.getElementById("welcomeModal");
 
-        // Display a personalized welcome message
-        if (visitorName) {
-            document.getElementById("welcomeMessage").textContent =
-                "Welcome, " + visitorName + "!";
-        }
+        const closeModalButton =
+            document.getElementById("closeModal");
+
+        closeModalButton.addEventListener("click", function() {
+            welcomeModal.style.display = "none";
+        });
 
         // Create an array containing skills and technologies
         const skills = [
@@ -288,16 +374,38 @@
             personalProjects.style.display = "block";
         }
 
-        // Add Dark Mode functionality
+        // Get the Dark Mode checkbox
         const darkModeToggle =
             document.getElementById("darkModeToggle");
 
-        darkModeToggle.addEventListener(
-            "change",
-            function() {
-                document.body.classList.toggle("dark-mode");
+        // Check the saved Dark Mode preference when the page loads
+        const savedDarkMode =
+            localStorage.getItem("darkMode");
+
+        if (savedDarkMode === "enabled") {
+            document.body.classList.add("dark-mode");
+            darkModeToggle.checked = true;
+        }
+
+        // Save the Dark Mode preference when the checkbox changes
+        darkModeToggle.addEventListener("change", function() {
+
+            if (darkModeToggle.checked) {
+                document.body.classList.add("dark-mode");
+
+                localStorage.setItem(
+                    "darkMode",
+                    "enabled"
+                );
+            } else {
+                document.body.classList.remove("dark-mode");
+
+                localStorage.setItem(
+                    "darkMode",
+                    "disabled"
+                );
             }
-        );
+        });
 
         // Add a notification after a short delay
         setTimeout(function() {
@@ -315,7 +423,7 @@
             );
         }, 1500);
 
-        // Dynamically add a new project
+        // Dynamically add a practice project
         const newProject =
             document.createElement("div");
 
@@ -329,58 +437,55 @@
             .getElementById("dynamicProjectArea")
             .appendChild(newProject);
 
-        // Modify an existing heading with querySelector
+        // Modify an existing heading
         const projectsHeading =
             document.querySelector("#projects h2");
 
         projectsHeading.textContent =
             "My Software Development Projects";
 
-        // Modify an existing paragraph with getElementById
+        // Modify an existing paragraph
         const projectIntroduction =
             document.getElementById("projectIntroduction");
 
         projectIntroduction.style.fontSize = "18px";
         projectIntroduction.style.fontWeight = "bold";
 
-        // Add timed confirmation to the contact form
+        // Add a timed confirmation to the contact form
         const contactForm =
             document.getElementById("contactForm");
 
         const formStatus =
             document.getElementById("formStatus");
 
-        contactForm.addEventListener(
-            "submit",
-            function(event) {
+        contactForm.addEventListener("submit", function(event) {
 
-                // Prevent the page from refreshing
-                event.preventDefault();
+            // Prevent the page from refreshing
+            event.preventDefault();
 
-                // Check the required fields
-                if (!contactForm.checkValidity()) {
-                    contactForm.reportValidity();
-                    return;
-                }
-
-                const senderName =
-                    document.getElementById("name").value;
-
-                // Display a temporary message
-                formStatus.textContent =
-                    "Sending message...";
-
-                // Replace it after 2.5 seconds
-                setTimeout(function() {
-                    formStatus.textContent =
-                        "Thank you, " +
-                        senderName +
-                        "! Your message was sent successfully.";
-
-                    contactForm.reset();
-                }, 2500);
+            // Check that the required fields are complete
+            if (!contactForm.checkValidity()) {
+                contactForm.reportValidity();
+                return;
             }
-        );
+
+            const senderName =
+                document.getElementById("name").value;
+
+            // Display a temporary loading message
+            formStatus.textContent =
+                "Sending message...";
+
+            // Display confirmation after 2.5 seconds
+            setTimeout(function() {
+                formStatus.textContent =
+                    "Thank you, " +
+                    senderName +
+                    "! Your message was sent successfully.";
+
+                contactForm.reset();
+            }, 2500);
+        });
     </script>
 </body>
 </html>
