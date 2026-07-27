@@ -60,15 +60,38 @@
             text-align: center;
         }
 
-        .new-project {
-            border-left: 4px solid black;
-            padding-left: 12px;
-            margin-top: 15px;
-        }
-
         #formStatus {
             font-weight: bold;
             margin-top: 15px;
+        }
+
+        /* Project card layout */
+        #projectContainer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .project-card {
+            border: 2px solid black;
+            padding: 15px;
+            width: 280px;
+        }
+
+        .dark-mode .project-card {
+            border-color: white;
+        }
+
+        .project-card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
+
+        .project-card a {
+            display: inline-block;
+            margin-top: 5px;
         }
 
         /* Modal background overlay */
@@ -157,7 +180,7 @@
     </div>
 
     <header>
-        <h1 id="welcomeMessage">Welcome to My Portfolio</h1>
+        <h1>Welcome to My Portfolio</h1>
 
         <nav>
             <a href="#about">About</a>
@@ -209,46 +232,23 @@
                     Here are links to some of my web-based and GitHub projects:
                 </p>
 
-                <ul>
-                    <li>
-                        <a href="https://github.com/alinia1123"
-                           target="_blank">
-                            My GitHub Profile
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="#projects">
-                            View My Portfolio Projects
-                        </a>
-                    </li>
-                </ul>
+                <a href="https://github.com/alinia1123"
+                   target="_blank">
+                    My GitHub Profile
+                </a>
             </div>
         </section>
 
         <!-- Projects Section -->
         <section id="projects">
-            <h2>My Projects</h2>
+            <h2>My Software Development Projects</h2>
 
             <p id="projectIntroduction">
-                Here are a few projects I have worked on:
+                These projects are loaded dynamically from JavaScript objects.
             </p>
 
-            <ul>
-                <li>
-                    <a href="#">Personal Portfolio Website</a>
-                </li>
-
-                <li>
-                    <a href="#">Java Calculator Project</a>
-                </li>
-
-                <li>
-                    <a href="#">Interactive JavaScript Page</a>
-                </li>
-            </ul>
-
-            <div id="dynamicProjectArea"></div>
+            <!-- JavaScript creates the project cards here -->
+            <div id="projectContainer"></div>
         </section>
 
         <!-- Contact Section -->
@@ -355,18 +355,139 @@
             skillsList.appendChild(listItem);
         });
 
-        // Count the projects in the Projects section
-        const projectItems =
-            document.querySelectorAll("#projects ul li");
+        /*
+         * Create three project objects.
+         * Each object contains a title, summary, image URL,
+         * and repository link.
+         */
+        const portfolioProject = {
+            title: "Personal Portfolio Website",
 
+            summary:
+                "A portfolio webpage that displays my skills, projects, and contact information.",
+
+            image:
+                "https://placehold.co/300x180?text=Portfolio+Website",
+
+            repository:
+                "https://github.com/alinia1123/alinia.portfolio"
+        };
+
+        const calculatorProject = {
+            title: "Java Calculator Project",
+
+            summary:
+                "A calculator application created to practice Java methods, validation, and calculations.",
+
+            image:
+                "https://placehold.co/300x180?text=Java+Calculator",
+
+            repository:
+                "https://github.com/alinia1123"
+        };
+
+        const javascriptProject = {
+            title: "Interactive JavaScript Page",
+
+            summary:
+                "A webpage that uses JavaScript events and DOM manipulation to respond to user actions.",
+
+            image:
+                "https://placehold.co/300x180?text=JavaScript+Project",
+
+            repository:
+                "https://github.com/alinia1123"
+        };
+
+        // Store the project objects in an array
+        const originalProjects = [
+            portfolioProject,
+            calculatorProject,
+            javascriptProject
+        ];
+
+        /*
+         * Check whether project data already exists
+         * in session storage.
+         */
+        let storedProjects =
+            sessionStorage.getItem("portfolioProjects");
+
+        let projects;
+
+        if (storedProjects === null) {
+
+            // Convert the project array into a string
+            const projectString =
+                JSON.stringify(originalProjects);
+
+            // Save the string in session storage
+            sessionStorage.setItem(
+                "portfolioProjects",
+                projectString
+            );
+
+            projects = originalProjects;
+        } else {
+
+            // Convert the stored string back into an array
+            projects = JSON.parse(storedProjects);
+        }
+
+        // Select the Projects section container
+        const projectContainer =
+            document.getElementById("projectContainer");
+
+        /*
+         * Loop through the array and dynamically
+         * create a card for every project.
+         */
+        projects.forEach(function(project) {
+
+            const projectCard =
+                document.createElement("article");
+
+            projectCard.classList.add("project-card");
+
+            const projectImage =
+                document.createElement("img");
+
+            projectImage.src = project.image;
+            projectImage.alt = project.title;
+
+            const projectTitle =
+                document.createElement("h3");
+
+            projectTitle.textContent = project.title;
+
+            const projectSummary =
+                document.createElement("p");
+
+            projectSummary.textContent = project.summary;
+
+            const projectLink =
+                document.createElement("a");
+
+            projectLink.href = project.repository;
+            projectLink.textContent = "View Repository";
+            projectLink.target = "_blank";
+
+            projectCard.appendChild(projectImage);
+            projectCard.appendChild(projectTitle);
+            projectCard.appendChild(projectSummary);
+            projectCard.appendChild(projectLink);
+
+            projectContainer.appendChild(projectCard);
+        });
+
+        // Control which featured content is visible
         const universityResources =
             document.getElementById("universityResources");
 
         const personalProjects =
             document.getElementById("personalProjects");
 
-        // Control which featured content is visible
-        if (projectItems.length < 3) {
+        if (projects.length < 3) {
             universityResources.style.display = "block";
             personalProjects.style.display = "block";
         } else {
@@ -378,7 +499,7 @@
         const darkModeToggle =
             document.getElementById("darkModeToggle");
 
-        // Check the saved Dark Mode preference when the page loads
+        // Check the saved Dark Mode preference
         const savedDarkMode =
             localStorage.getItem("darkMode");
 
@@ -387,7 +508,7 @@
             darkModeToggle.checked = true;
         }
 
-        // Save the Dark Mode preference when the checkbox changes
+        // Save the Dark Mode preference
         darkModeToggle.addEventListener("change", function() {
 
             if (darkModeToggle.checked) {
@@ -422,34 +543,6 @@
                 document.body.firstChild
             );
         }, 1500);
-
-        // Dynamically add a practice project
-        const newProject =
-            document.createElement("div");
-
-        newProject.classList.add("new-project");
-
-        newProject.innerHTML =
-            "<h3>Practice Project</h3>" +
-            "<p>This section was added with JavaScript to demonstrate DOM manipulation.</p>";
-
-        document
-            .getElementById("dynamicProjectArea")
-            .appendChild(newProject);
-
-        // Modify an existing heading
-        const projectsHeading =
-            document.querySelector("#projects h2");
-
-        projectsHeading.textContent =
-            "My Software Development Projects";
-
-        // Modify an existing paragraph
-        const projectIntroduction =
-            document.getElementById("projectIntroduction");
-
-        projectIntroduction.style.fontSize = "18px";
-        projectIntroduction.style.fontWeight = "bold";
 
         // Add a timed confirmation to the contact form
         const contactForm =
