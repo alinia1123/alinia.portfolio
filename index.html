@@ -3,7 +3,9 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>Aliyah's Portfolio</title>
 
@@ -49,6 +51,25 @@
         .dark-mode-control {
             margin-bottom: 20px;
         }
+
+        .page-notification {
+            border: 2px solid black;
+            padding: 10px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .new-project {
+            border-left: 4px solid black;
+            padding-left: 12px;
+            margin-top: 15px;
+        }
+
+        #formStatus {
+            font-weight: bold;
+            margin-top: 15px;
+        }
     </style>
 </head>
 
@@ -88,7 +109,7 @@
 
             <h3>My Skills and Technologies</h3>
 
-            <!-- JavaScript will add the skills here -->
+            <!-- JavaScript adds the skills here -->
             <ul id="skillsList"></ul>
         </section>
 
@@ -118,7 +139,8 @@
 
                 <ul>
                     <li>
-                        <a href="https://github.com/alinia1123" target="_blank">
+                        <a href="https://github.com/alinia1123"
+                           target="_blank">
                             My GitHub Profile
                         </a>
                     </li>
@@ -136,7 +158,9 @@
         <section id="projects">
             <h2>My Projects</h2>
 
-            <p>Here are a few projects I have worked on:</p>
+            <p id="projectIntroduction">
+                Here are a few projects I have worked on:
+            </p>
 
             <ul>
                 <li>
@@ -151,6 +175,9 @@
                     <a href="#">Interactive JavaScript Page</a>
                 </li>
             </ul>
+
+            <!-- JavaScript adds a new project here -->
+            <div id="dynamicProjectArea"></div>
         </section>
 
         <!-- Contact Section -->
@@ -160,22 +187,40 @@
             <form id="contactForm">
 
                 <label for="name">Sender Name:</label>
-                <input type="text" id="name" name="name" required>
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    required
+                >
 
                 <br><br>
 
                 <label for="email">Email Address:</label>
-                <input type="email" id="email" name="email" required>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    required
+                >
 
                 <br><br>
 
                 <label for="subject">Subject:</label>
-                <input type="text" id="subject" name="subject">
+                <input
+                    type="text"
+                    id="subject"
+                    name="subject"
+                >
 
                 <br><br>
 
                 <label for="message">Message:</label>
-                <textarea id="message" name="message" rows="5"></textarea>
+                <textarea
+                    id="message"
+                    name="message"
+                    rows="5"
+                ></textarea>
 
                 <br><br>
 
@@ -183,14 +228,18 @@
                     Send Message
                 </button>
 
+                <p id="formStatus"></p>
+
             </form>
         </section>
 
     </main>
 
     <script>
+        "use strict";
+
         // Ask the visitor for their name
-        let visitorName = prompt("What is your name?");
+        const visitorName = prompt("What is your name?");
 
         // Display a personalized welcome message
         if (visitorName) {
@@ -208,15 +257,19 @@
         ];
 
         // Display each skill as a bulleted list item
-        const skillsList = document.getElementById("skillsList");
+        const skillsList =
+            document.getElementById("skillsList");
 
         skills.forEach(function(skill) {
-            const listItem = document.createElement("li");
+            const listItem =
+                document.createElement("li");
+
             listItem.textContent = skill;
+
             skillsList.appendChild(listItem);
         });
 
-        // Count the projects listed in the Projects section
+        // Count the projects in the Projects section
         const projectItems =
             document.querySelectorAll("#projects ul li");
 
@@ -226,7 +279,7 @@
         const personalProjects =
             document.getElementById("personalProjects");
 
-        // Use conditional logic to control featured content
+        // Control which featured content is visible
         if (projectItems.length < 3) {
             universityResources.style.display = "block";
             personalProjects.style.display = "block";
@@ -239,41 +292,95 @@
         const darkModeToggle =
             document.getElementById("darkModeToggle");
 
-        darkModeToggle.addEventListener("change", function() {
-            document.body.classList.toggle("dark-mode");
-        });
+        darkModeToggle.addEventListener(
+            "change",
+            function() {
+                document.body.classList.toggle("dark-mode");
+            }
+        );
 
-        // Add interactivity to the contact form button
+        // Add a notification after a short delay
+        setTimeout(function() {
+            const notification =
+                document.createElement("div");
+
+            notification.textContent =
+                "Welcome! Take a look at my latest portfolio updates.";
+
+            notification.classList.add("page-notification");
+
+            document.body.insertBefore(
+                notification,
+                document.body.firstChild
+            );
+        }, 1500);
+
+        // Dynamically add a new project
+        const newProject =
+            document.createElement("div");
+
+        newProject.classList.add("new-project");
+
+        newProject.innerHTML =
+            "<h3>Practice Project</h3>" +
+            "<p>This section was added with JavaScript to demonstrate DOM manipulation.</p>";
+
+        document
+            .getElementById("dynamicProjectArea")
+            .appendChild(newProject);
+
+        // Modify an existing heading with querySelector
+        const projectsHeading =
+            document.querySelector("#projects h2");
+
+        projectsHeading.textContent =
+            "My Software Development Projects";
+
+        // Modify an existing paragraph with getElementById
+        const projectIntroduction =
+            document.getElementById("projectIntroduction");
+
+        projectIntroduction.style.fontSize = "18px";
+        projectIntroduction.style.fontWeight = "bold";
+
+        // Add timed confirmation to the contact form
         const contactForm =
             document.getElementById("contactForm");
 
-        const submitButton =
-            document.getElementById("submitButton");
+        const formStatus =
+            document.getElementById("formStatus");
 
-        submitButton.addEventListener("click", function(event) {
-            // Prevent the form from refreshing the webpage
-            event.preventDefault();
+        contactForm.addEventListener(
+            "submit",
+            function(event) {
 
-            // Check that required fields were completed
-            if (!contactForm.checkValidity()) {
-                contactForm.reportValidity();
-                return;
+                // Prevent the page from refreshing
+                event.preventDefault();
+
+                // Check the required fields
+                if (!contactForm.checkValidity()) {
+                    contactForm.reportValidity();
+                    return;
+                }
+
+                const senderName =
+                    document.getElementById("name").value;
+
+                // Display a temporary message
+                formStatus.textContent =
+                    "Sending message...";
+
+                // Replace it after 2.5 seconds
+                setTimeout(function() {
+                    formStatus.textContent =
+                        "Thank you, " +
+                        senderName +
+                        "! Your message was sent successfully.";
+
+                    contactForm.reset();
+                }, 2500);
             }
-
-            // Get the sender's name from the form
-            const senderName =
-                document.getElementById("name").value;
-
-            // Display a confirmation message
-            alert(
-                "Thank you, " +
-                senderName +
-                ", your message has been sent!"
-            );
-
-            // Clear the contact form after submission
-            contactForm.reset();
-        });
+        );
     </script>
 </body>
 </html>
